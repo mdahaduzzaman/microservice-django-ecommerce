@@ -18,7 +18,7 @@ class Vendor(models.Model):
 
 class VendorProfile(models.Model):
     vendor = models.OneToOneField(
-        Vendor, on_delete=models.CASCADE, related_name="profile"
+        Vendor, on_delete=models.CASCADE, related_name="vendor_profile"
     )
     business_name = models.CharField(max_length=255)
     tax_id = models.CharField(max_length=50, blank=True, null=True)
@@ -36,7 +36,7 @@ class VendorUser(models.Model):
 
     user_id = models.UUIDField()  # User ID from (Auth Service)
     vendor = models.ForeignKey(
-        Vendor, on_delete=models.CASCADE, related_name="users"
+        Vendor, on_delete=models.CASCADE, related_name="vendor_users"
     )
     role = models.CharField(
         max_length=20, choices=ROLE_CHOICES, default="staff"
