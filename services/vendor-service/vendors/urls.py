@@ -1,13 +1,12 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 
-from vendors.views import VendorViewSet, HealthView
+from vendors.views import (
+    HealthView,
+    VendorMeView,
+)
 
-router = DefaultRouter()
-
-router.register('vendors', VendorViewSet, basename="vendors")
 
 urlpatterns = [
-    path("", include(router.urls)),
-    path("health", HealthView.as_view()),
+    path("health/", HealthView.as_view()),
+    path("vendors/me/", VendorMeView.as_view(), name="vendors_me"),
 ]

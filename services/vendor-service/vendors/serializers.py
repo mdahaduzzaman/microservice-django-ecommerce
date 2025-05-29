@@ -6,4 +6,4 @@ from vendors.models import Vendor
 class VendorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vendor
-        exclude = ["created_at", "updated_at"]
+        exclude = ["created_at", "updated_at", "user_id"]
