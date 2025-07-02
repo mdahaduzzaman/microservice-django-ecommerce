@@ -2,8 +2,6 @@ services:
   kong-database:
     image: postgres:15.2
     container_name: kong-database
-    networks:
-      - kong-net
     ports:
       - "5432:5432"
     environment:
@@ -17,31 +15,27 @@ services:
       retries: 5
     volumes:
       - kong_data:/var/lib/postgresql/data
+    restart: on-failure
 
   kong-migrations:
     image: kong/kong-gateway:3.10.0.2
     depends_on:
       kong-database:
         condition: service_healthy
-    networks:
-      - kong-net
     environment:
       KONG_DATABASE: postgres
       KONG_PG_HOST: kong-database
       KONG_PG_PASSWORD: kongpass
       KONG_PASSWORD: test
-      # Uncomment if using Enterprise edition
-      # KONG_LICENSE_DATA: ${KONG_LICENSE_DATA}
     command: "kong migrations bootstrap"
     restart: on-failure
 
   kong-gateway:
     image: kong/kong-gateway:3.10.0.2
+    restart: on-failure
     depends_on:
       kong-migrations:
         condition: service_completed_successfully
-    networks:
-      - kong-net
     environment:
       KONG_DATABASE: postgres
       KONG_PG_HOST: kong-database
@@ -53,8 +47,10 @@ services:
       KONG_ADMIN_ERROR_LOG: /dev/stderr
       KONG_ADMIN_LISTEN: 0.0.0.0:8001
       KONG_ADMIN_GUI_URL: http://localhost:8002
-      # Uncomment if using Enterprise edition
-      # KONG_LICENSE_DATA: ${KONG_LICENSE_DATA}
+      KONG_PLUGINS: "bundled,keycloak-introspection"
+    volumes:
+      - ./kong.yml:/etc/kong/kong.yml
+      - ./keycloak-introspection:/usr/local/share/lua/5.1/kong/plugins/keycloak-introspection
     ports:
       - "8000:8000"
       - "8443:8443"
@@ -73,8 +69,7 @@ services:
   konga-database:
     image: postgres:11.6
     container_name: konga-database
-    networks:
-      - kong-net
+    restart: on-failure
     environment:
       POSTGRES_USER: konga
       POSTGRES_DB: konga
@@ -96,8 +91,6 @@ services:
       DB_HOST: konga-database
       DB_USER: konga
       DB_PASSWORD: konga
-    networks:
-      - kong-net
     restart: on-failure
     depends_on:
       - konga-database
@@ -105,9 +98,7 @@ services:
   konga:
     image: pantsel/konga:latest
     platform: linux/amd64
-    restart: always
-    networks:
-      - kong-net
+    restart: on-failure
     environment:
       DB_ADAPTER: postgres
       DB_HOST: konga-database
@@ -120,11 +111,6 @@ services:
       - konga-database
     ports:
       - "1337:1337"
-
-
-networks:
-  kong-net:
-    name: kong-net
 
 volumes:
   kong_data:

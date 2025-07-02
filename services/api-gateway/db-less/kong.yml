@@ -1,0 +1,26 @@
+_format_version: "3.0"
+services:
+  - name: catalog-service
+    url: http://host.docker.internal:8003
+    routes:
+      - name: catalog-route
+        paths: ["/catalog"]
+        strip_path: true
+        protocols: ["http", "https"]
+      - name: catalog-admin-route
+        paths: ["/admin"]
+        strip_path: false
+        protocols: ["http", "https"]
+      - name: catalog-static-route
+        paths: ["/static"]
+        strip_path: false
+        preserve_host: true
+        protocols: ["http", "https"]
+
+  - name: vendor-service
+    url: http://host.docker.internal:8004
+    routes:
+      - name: vendor-route
+        paths: ["/vendor"]
+        strip_path: true
+        protocols: ["http", "https"]
