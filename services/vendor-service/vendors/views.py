@@ -8,6 +8,7 @@ from drf_spectacular.utils import extend_schema
 
 from vendors.models import Vendor
 from vendors.serializers import VendorSerializer
+from vendors.user_service import assign_vendor_role
 
 
 @extend_schema(tags=["Vendor"])
@@ -39,6 +40,8 @@ class VendorMeView(APIView):
         serializer = VendorSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user_id=user_id)
+            # Assign the vendor role to the user
+            assign_vendor_role(user_id)
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 

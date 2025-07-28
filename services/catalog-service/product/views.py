@@ -6,10 +6,12 @@ from uuid import UUID
 from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django_filters.rest_framework import DjangoFilterBackend
 
 from product.models import Product, Category
 from product.serializers import ProductSerializer, CategorySerializer
-from product.services import VendorService
+from product.services import InventoryServiceClient, VendorServiceClient
+from product.filters import ProductFilter
 
 
 @extend_schema(tags=["Category"])
@@ -24,6 +26,8 @@ class ProductViewSet(ModelViewSet):
     queryset = Product.objects.select_related("category")
     serializer_class = ProductSerializer
     lookup_field = "slug"
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ProductFilter
 
     def get_user_id(self, request: Request) -> UUID:
         user_id_str: Optional[str] = request.META.get("HTTP_X_USER_ID")
@@ -36,18 +40,21 @@ class ProductViewSet(ModelViewSet):
 
     def get_vendor_id(self, request: Request) -> UUID:
         user_id = self.get_user_id(request)
-        vendor_id = VendorService.get_vendor_by_user_id(user_id)
+        client = VendorServiceClient()
+        vendor_id = client.get_vendor(user_id)
         if not vendor_id:
             raise PermissionDenied("Vendor not found")
         return vendor_id
 
-    def get_queryset(self):
-        vendor_id = self.get_vendor_id(self.request)
-        return self.queryset.filter(vendor_id=vendor_id)
-
     def perform_create(self, serializer):
         vendor_id = self.get_vendor_id(self.request)
         serializer.save(vendor_id=vendor_id)
+
+        client = InventoryServiceClient()
+        client.create_product_inventory(
+            product_id=serializer.instance.id,
+            quantity=serializer.validated_data["quantity"],
+        )
 
     def perform_update(self, serializer):
         vendor_id = self.get_vendor_id()

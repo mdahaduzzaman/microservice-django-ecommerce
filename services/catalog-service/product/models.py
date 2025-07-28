@@ -2,6 +2,7 @@ import uuid
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
+from django.db.models import UniqueConstraint
 
 
 class TimeStampedModel(models.Model):
@@ -112,3 +113,25 @@ class Product(TimeStampedModel):
         except Product.DoesNotExist:
             return True
 
+
+class ProductImage(TimeStampedModel):
+    product = models.ForeignKey(
+        Product,
+        related_name="images",
+        on_delete=models.CASCADE,
+        verbose_name=_("Product"),
+    )
+    image = models.ImageField(upload_to="product_images/", verbose_name=_("Image"))
+    is_primary = models.BooleanField(default=False, verbose_name=_("Is Primary"))
+
+    class Meta:
+        db_table = "product_images"
+        verbose_name = _("Product Image")
+        verbose_name_plural = _("Product Images")
+        UniqueConstraint(
+            fields=["product", "is_primary"],
+            name="unique_primary_image_per_product",
+        )
+
+    def __str__(self):
+        return f"Image for {self.product.title}"
