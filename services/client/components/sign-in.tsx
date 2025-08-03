@@ -1,4 +1,5 @@
 import { signIn } from "@/auth";
+import { Button } from "./ui/button";
 
 export default function SignIn() {
   return (
@@ -8,7 +9,13 @@ export default function SignIn() {
         await signIn("keycloak");
       }}
     >
-      <button type="submit">Signin with Keycloak</button>
+      <Button
+        type="submit"
+        size={"lg"}
+        className="relative hover:cursor-pointer py-5 rounded-full flex items-center justify-between"
+      >
+        <span>Login</span>
+      </Button>
     </form>
   );
 }
