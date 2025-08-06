@@ -85,7 +85,10 @@ class KeycloakClient:
         # Filter roles to assign
         roles_to_assign = [role for role in all_roles if role["name"] in role_names]
 
+        print(f"Assigning roles: {roles_to_assign} to user: {user_id}")
+
         response = requests.post(url, headers=headers, json=roles_to_assign)
+        print(f"Response status code: {response.status_code}, Response text: {response.text}")
         if response.status_code == 204:
             print(f"Successfully assigned realm roles: {role_names}")
         else:

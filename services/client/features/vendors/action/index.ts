@@ -8,6 +8,30 @@ export const getSubscriptionPlans = async (): Promise<SubscriptionPlan[]> => {
   return response.data;
 };
 
+export const getSubscriptionPlan = async (
+  id: string
+): Promise<SubscriptionPlan> => {
+  const response = await publicAxios.get(
+    `/api/v1/vendors/subscription-plans/${id}/`
+  );
+  return response.data;
+};
+
+export const subscriptionCheckoutSession = async (data: any) => {
+  try {
+    const response = await authAxios.post(
+      "/api/v1/vendors/checkout/",
+      data
+    );
+    return response.data;
+  } catch (error: any) {
+    return {
+      status: error.response.status,
+      errors: error.response.data,
+    };
+  }
+};
+
 export const getVendor = async () => {
   const response = await authAxios.get("/api/v1/vendors/me/");
 

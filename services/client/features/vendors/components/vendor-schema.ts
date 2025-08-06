@@ -9,3 +9,14 @@ export const vendorSchema = z.object({
   plan: z.string().min(2).max(100),
   billing_cycle: z.string().min(2),
 });
+
+export const vendorPaymentSchema = z.object({
+  payment_method: z.string().min(1, {
+    error: "Payment method is required",
+  }),
+  quantity: z.number(),
+  plan: z.string().min(1),
+  vendor: z.string().min(1),
+  success_url: z.string().min(1),
+  cancel_url: z.string().min(1),
+});

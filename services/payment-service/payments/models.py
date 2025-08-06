@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator
 
 
+
 from payments.choices import Status, TransactionType
 
 
@@ -33,6 +34,38 @@ class PaymentMethod(TimeStampedModel):
         managed = True
         verbose_name = "Payment Method"
         verbose_name_plural = "Payment Methods"
+
+
+class SubscriptionPlan(TimeStampedModel):
+    # Subscription plans associated with payment methods
+    payment_method = models.ForeignKey(
+        PaymentMethod, on_delete=models.CASCADE, related_name="subscription_plans"
+    )
+    name = models.CharField(max_length=100)
+    interval = models.CharField(
+        max_length=10,
+        choices=[("monthly", "Monthly"), ("yearly", "Yearly")],
+        default="monthly",
+    )
+    monthly_price = models.FloatField(validators=[MinValueValidator(0)])
+    yearly_price = models.FloatField(validators=[MinValueValidator(0)])
+    description = models.TextField(null=True, blank=True)
+    monthly_price_id = models.CharField(max_length=100, null=True, blank=True)
+    yearly_price_id = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.payment_method.name})"
+
+    class Meta:
+        db_table = 'subscription_plans'
+        managed = True
+        verbose_name = 'Subscription Plan'
+        verbose_name_plural = 'Subscription Plans'
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "payment_method", "interval"], name="unique_payment_method_name"
+            )
+        ]
 
 
 class Transaction(TimeStampedModel):

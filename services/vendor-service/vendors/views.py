@@ -1,5 +1,6 @@
 from typing import Optional
 from uuid import UUID
+import requests
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
@@ -9,8 +10,16 @@ from rest_framework.generics import RetrieveAPIView
 from rest_framework import viewsets
 
 from vendors.models import Vendor, SubscriptionPlan, VendorPlan
-from vendors.serializers import VendorCreateSerializer, VendorSerializer, SubscriptionPlanSerializer, VendorPlanSerializer
+from vendors.serializers import (
+    CheckoutResponseSerializer,
+    CheckoutSessionSerializer,
+    VendorCreateSerializer,
+    VendorSerializer,
+    SubscriptionPlanSerializer,
+    VendorPlanSerializer,
+)
 from vendors.user_service import assign_vendor_role
+from vendors.payment_service import PaymentServiceClient
 
 
 @extend_schema(tags=["Vendor"])
@@ -32,7 +41,6 @@ class VendorMeView(APIView):
         if not vendor:
             return Response({"detail": "Vendor not found."}, status=404)
         serializer = VendorSerializer(vendor)
-        print(serializer.data)  # Debugging line to check the serialized data
         return Response(serializer.data)
 
     def post(self, request: Request) -> Response:
@@ -80,6 +88,24 @@ class VendorPlanView(RetrieveAPIView):
     serializer_class = VendorPlanSerializer
     queryset = VendorPlan.objects.all()
     lookup_field = "vendor"
+
+
+class CreateVendorCheckoutView(APIView):
+    @extend_schema(
+        request=CheckoutSessionSerializer,
+        responses={201: CheckoutResponseSerializer},
+    )
+    def post(self, request: Request) -> Response:
+        serializer = CheckoutSessionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            client = PaymentServiceClient()
+            response = client.create_checkout_session(
+                **serializer.validated_data,
+            )
+            return Response(response, status=200)
+        except requests.RequestException as e:
+            return Response({"detail": str(e)}, status=500)
 
 
 class HealthView(APIView):

@@ -8,6 +8,7 @@ from vendors.choices import BillingCycle
 class VendorSerializer(serializers.ModelSerializer):
     plan = serializers.ReadOnlyField()
     billing_cycle = serializers.ReadOnlyField()
+
     class Meta:
         model = Vendor
         exclude = ["created_at", "updated_at", "user_id"]
@@ -33,7 +34,7 @@ class VendorCreateSerializer(serializers.ModelSerializer):
             billing_cycle=billing_cycle,
         )
         return vendor
-    
+
     @transaction.atomic
     def update(self, instance, validated_data):
         plan = validated_data.pop("plan", None)
@@ -45,8 +46,7 @@ class VendorCreateSerializer(serializers.ModelSerializer):
 
         if plan:
             VendorPlan.objects.update_or_create(
-                vendor=instance,
-                defaults={"plan": plan, "billing_cycle": billing_cycle}
+                vendor=instance, defaults={"plan": plan, "billing_cycle": billing_cycle}
             )
 
         return instance
@@ -62,3 +62,19 @@ class VendorPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = VendorPlan
         exclude = ["created_at", "updated_at"]
+
+
+class CheckoutSessionSerializer(serializers.Serializer):
+    payment_method = serializers.CharField()
+    quantity = serializers.IntegerField(default=1)
+    plan = serializers.PrimaryKeyRelatedField(queryset=SubscriptionPlan.objects.all())
+    vendor = serializers.PrimaryKeyRelatedField(
+        queryset=Vendor.objects.all(), required=True
+    )
+    success_url = serializers.URLField()
+    cancel_url = serializers.URLField()
+
+
+class CheckoutResponseSerializer(serializers.Serializer):
+    session_id = serializers.CharField()
+    checkout_url = serializers.URLField()

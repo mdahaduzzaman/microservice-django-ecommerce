@@ -1,3 +1,14 @@
+// ================== Payments Start ===================
+export type PaymentMethod = {
+  id: string;
+  name: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  image_url: string;
+};
+
+// ================== Payments End ====================
 // ================== Catalog Start ===================
 export type Category = {
   id: string;

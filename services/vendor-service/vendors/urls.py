@@ -6,6 +6,7 @@ from vendors.views import (
     VendorMeView,
     SubscriptionPlanView,
     VendorPlanView,
+    CreateVendorCheckoutView,
 )
 
 router = SimpleRouter()
@@ -17,5 +18,6 @@ urlpatterns = [
     path("health/", HealthView.as_view()),
     path("vendor-plans/<uuid:vendor>/", VendorPlanView.as_view(), name="vendor_plans"),
     path("me/", VendorMeView.as_view(), name="vendors_me"),
+    path("checkout/", CreateVendorCheckoutView.as_view(), name="vendor_checkout"),
     path("", include(router.urls)),
 ]

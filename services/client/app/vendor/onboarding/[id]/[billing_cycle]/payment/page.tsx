@@ -1,3 +1,7 @@
+import { getPaymentMethods } from "@/features/payments/actions";
+import PaymentForm from "@/features/vendors/components/payment-form";
+import { PaymentMethod } from "@/lib/types";
+
 async function page({
   params,
 }: {
@@ -5,9 +9,16 @@ async function page({
 }) {
   const { id, billing_cycle } = await params;
 
+  const paymentMethods: PaymentMethod[] = await getPaymentMethods();
+
   return (
-    <div>
-      page - {id} - {billing_cycle}
+    <div className="w-2/3 mx-auto p-5 rounded-xl bg-secondary">
+      <h1 className="text-3xl font-bold text-center mb-5">Make Payment</h1>
+      <PaymentForm
+        plan={id}
+        billingCycle={billing_cycle}
+        paymentMethods={paymentMethods}
+      />
     </div>
   );
 }
