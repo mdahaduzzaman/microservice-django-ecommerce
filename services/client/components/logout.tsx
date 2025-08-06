@@ -22,7 +22,7 @@ function Logout() {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="ghost" className="flex gap-3 items-center">
+        <Button variant="ghost" className="flex gap-3 items-center justify-start w-full">
           <span>Logout</span>
           <LogOut className="h-4 w-4" />
         </Button>

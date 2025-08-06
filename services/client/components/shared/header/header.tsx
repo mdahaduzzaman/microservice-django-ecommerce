@@ -1,10 +1,10 @@
 import { auth } from "@/auth";
-import SignIn from "@/components/sign-in";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Handbag, Heart, SearchSlash } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
+import SignIn from "./sign-in";
 import User from "./user";
 
 const issuer_url = process.env.AUTH_KEYCLOAK_ISSUER;
@@ -22,7 +22,7 @@ export async function Header() {
   const accountUrl = `${issuer_url}/account?referrer=${CLIENT_ID}&referrer=client&referrer_uri=${redirect_uri}`;
 
   return (
-    <header className="z-10 sticky backdrop-blur-md top-5 mb-5 bg-gradient-to-r from-[#eaf5eb] to-[#f1f7f2] rounded-full shadow-md flex flex-col sm:flex-row items-center justify-between sm:p-2">
+    <header className="z-20 sticky backdrop-blur-md top-5 mb-5 bg-gradient-to-r from-[#eaf5eb] to-[#f1f7f2] rounded-full shadow-md flex flex-col sm:flex-row items-center justify-between sm:p-2">
       <div className="flex items-center gap-5 md:px-5">
         <Link href={"/"} className="hidden sm:block">
           ShopSphere

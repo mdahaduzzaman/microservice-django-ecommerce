@@ -14,3 +14,4 @@ def assign_vendor_role(user_id: UUID) -> None:
     res = requests.post(url, json=data)
     if res.status_code != 200:
         raise ValueError("Failed to assign vendor role.")
+    print(f"Vendor role assigned to user {user_id}.")

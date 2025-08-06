@@ -4,7 +4,7 @@ import Keycloak from "next-auth/providers/keycloak";
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Keycloak],
   callbacks: {
-    async jwt({ token, account, user }) {
+    async jwt({ token, account }) {
       if (account) {
         // First-time login, save the `access_token`, its expiry and the `refresh_token`
         return {
@@ -13,7 +13,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           expires_at: account.expires_at,
           refresh_token: account.refresh_token,
         };
-      } else if (Date.now() < Number(token.expires_at) * 1000) {
+      } else if (Date.now() < Number(token.expires_at)) {
         // Subsequent logins, but the `access_token` is still valid
         return token;
       } else {
@@ -21,8 +21,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!token.refresh_token || typeof token.refresh_token !== "string") {
           throw new Error("Missing or invalid refresh_token");
         }
-
-        console.log("refreshing access_token");
 
         try {
           const response = await fetch(
@@ -34,9 +32,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               },
               body: new URLSearchParams({
                 grant_type: "refresh_token",
-                client_id: process.env.AUTH_KEYCLOAK_ID as string,
-                client_secret: process.env.AUTH_KEYCLOAK_SECRET as string,
-                refresh_token: token.refresh_token,
+                client_id: process.env.AUTH_KEYCLOAK_ID!,
+                client_secret: process.env.AUTH_KEYCLOAK_SECRET!,
+                refresh_token: token.refresh_token!,
               }),
             }
           );
@@ -57,11 +55,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           };
         } catch (error) {
           console.error("Error refreshing access_token", error);
-          console.log("redirecting to sign in");
-          // Sign out the user if fail to refresh the token
-          await signOut({
-            redirectTo: "/auth/signin",
-          });
           // If we fail to refresh the token, return an error so we can handle it on the page
           token.error = "RefreshTokenError";
           return token;
@@ -69,6 +62,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
     },
     async session({ session, token }) {
+      session.error = token.error as "RefreshTokenError" | undefined;
       session.access_token = token.access_token as string;
       return session;
     },
@@ -78,5 +72,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 declare module "next-auth" {
   interface Session {
     access_token: string;
+    error?: "RefreshTokenError";
   }
 }

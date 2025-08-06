@@ -1,6 +1,5 @@
 import HomeCarousel from "@/components/customized/carousel/home-caousel";
-import { getCategories } from "@/features/categories/actions/categories";
-import { getSession } from "@/lib/get-session";
+import BecomeSeller from "@/components/shared/footer/become-seller";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,10 +8,6 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  // const categories = await getCategories();
-
-  // console.log(categories);
-
   return (
     <>
       <div className="flex flex-col md:flex-row gap-3 md:h-[75vh]">
@@ -44,6 +39,7 @@ export default async function Home() {
           </div>
         </div>
       </div>
+      <BecomeSeller />
     </>
   );
 }

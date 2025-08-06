@@ -5,9 +5,11 @@ from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.request import Request
 from drf_spectacular.utils import extend_schema
+from rest_framework.generics import RetrieveAPIView
+from rest_framework import viewsets
 
-from vendors.models import Vendor
-from vendors.serializers import VendorSerializer
+from vendors.models import Vendor, SubscriptionPlan, VendorPlan
+from vendors.serializers import VendorCreateSerializer, VendorSerializer, SubscriptionPlanSerializer, VendorPlanSerializer
 from vendors.user_service import assign_vendor_role
 
 
@@ -30,6 +32,7 @@ class VendorMeView(APIView):
         if not vendor:
             return Response({"detail": "Vendor not found."}, status=404)
         serializer = VendorSerializer(vendor)
+        print(serializer.data)  # Debugging line to check the serialized data
         return Response(serializer.data)
 
     def post(self, request: Request) -> Response:
@@ -37,7 +40,7 @@ class VendorMeView(APIView):
         if Vendor.objects.filter(user_id=user_id).exists():
             return Response({"detail": "Vendor already exists."}, status=400)
 
-        serializer = VendorSerializer(data=request.data)
+        serializer = VendorCreateSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user_id=user_id)
             # Assign the vendor role to the user
@@ -64,6 +67,19 @@ class VendorMeView(APIView):
             return Response({"detail": "Vendor not found."}, status=404)
         vendor.delete()
         return Response(status=204)
+
+
+@extend_schema(tags=["Subscription Plan"])
+class SubscriptionPlanView(viewsets.ReadOnlyModelViewSet):
+    serializer_class = SubscriptionPlanSerializer
+    queryset = SubscriptionPlan.objects.all()
+
+
+@extend_schema(tags=["Vendor Plan"])
+class VendorPlanView(RetrieveAPIView):
+    serializer_class = VendorPlanSerializer
+    queryset = VendorPlan.objects.all()
+    lookup_field = "vendor"
 
 
 class HealthView(APIView):

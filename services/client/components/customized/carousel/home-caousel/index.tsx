@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Carousel,
   CarouselContent,
@@ -12,11 +11,11 @@ import {
 import { cn } from "@/lib/utils";
 import Autoplay from "embla-carousel-autoplay";
 import * as React from "react";
-import ItemOne from "./item-one";
-import ItemTwo from "./item-two";
 import ItemFive from "./item-five";
-import ItemThree from "./item-three";
 import ItemFour from "./item-four";
+import ItemOne from "./item-one";
+import ItemThree from "./item-three";
+import ItemTwo from "./item-two";
 
 function HomeCarousel() {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -71,9 +70,12 @@ function HomeCarousel() {
           <button
             key={index}
             onClick={() => api?.scrollTo(index)}
-            className={cn("size-2 md:size-3.5 rounded-full border md:border-2 border-black", {
-              "border-red-500": current === index + 1,
-            })}
+            className={cn(
+              "size-2 md:size-3.5 rounded-full border md:border-2 border-black",
+              {
+                "border-red-500": current === index + 1,
+              }
+            )}
           />
         ))}
       </div>
