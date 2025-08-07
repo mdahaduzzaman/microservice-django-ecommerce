@@ -25,7 +25,8 @@ type Props = {
 export default function VendorTimeline({ items }: Props) {
   const pathName = usePathname();
   const isPaymentPage = pathName.endsWith("/payment");
-  const currentPage = isPaymentPage ? 2 : 1;
+  const isStatusPage = pathName.includes("/payment/status")
+  const currentPage = isPaymentPage ? 2 : isStatusPage ? 3 : 1;
 
   return (
     <Timeline value={currentPage}>

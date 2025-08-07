@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { createVendor, getVendor, updateVendor } from "../action";
 import { vendorSchema } from "./vendor-schema";
+import { Loader } from "lucide-react";
 
 type Props = {
   plan: string;
@@ -174,7 +175,15 @@ function VendorForm({ plan, billingCycle }: Props) {
             </FormItem>
           )}
         />
-        <Button type="submit">Proceed Next</Button>
+        <Button
+          type="submit"
+          disabled={mutation.isPending || updateMutation.isPending}
+        >
+          {(mutation.isPending || updateMutation.isPending) && (
+            <Loader className="animate-spin" />
+          )}
+          Proceed Next
+        </Button>
       </form>
     </Form>
   );

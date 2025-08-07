@@ -21,9 +21,10 @@ class PaymentServiceClient:
         data = {
             "payment_method": payment_method,
             "mode": "subscription",
+            "interval": "monthly" if quantity == 1 else "yearly",
             "line_items": [
                 {
-                    "name": f"{plan.name.capitalize()} Subscription",
+                    "name": f"{plan.name.capitalize()} Package",
                     "amount": (
                         plan.monthly_price if quantity == 1 else plan.yearly_price
                     ),

@@ -7,3 +7,12 @@ export const getPaymentMethods = async (): Promise<PaymentMethod[]> => {
   const response = await publicAxios.get("/api/v1/payments/payment-methods/");
   return response.data;
 };
+
+export const checkSession = async (data: any) => {
+  const response = await publicAxios.post(
+    "/api/v1/payments/check-session/",
+    data
+  );
+
+  return response.data;
+};

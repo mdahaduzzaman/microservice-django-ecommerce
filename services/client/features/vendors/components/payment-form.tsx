@@ -25,6 +25,7 @@ import {
   subscriptionCheckoutSession,
 } from "../action";
 import { vendorPaymentSchema } from "./vendor-schema";
+import { Loader } from "lucide-react";
 
 type Props = {
   plan: string;
@@ -94,8 +95,8 @@ function PaymentForm({ plan, billingCycle, paymentMethods }: Props) {
         quantity: billingCycle === "monthly" ? 1 : 12,
         plan: subscriptionPlan.id,
         vendor: vendor.id,
-        success_url: `${origin}/vendor/subscriptions/payments/success`,
-        cancel_url: `${origin}/vendor/subscriptions/payments/cancel`,
+        success_url: `${origin}/vendor/onboarding/payments/status`,
+        cancel_url: `${origin}/vendor/onboarding/payments/status`,
       });
     }
   }, [subscriptionPlan, vendor]);
@@ -179,7 +180,10 @@ function PaymentForm({ plan, billingCycle, paymentMethods }: Props) {
           )}
         />
 
-        <Button type="submit">Proceed to Checkout</Button>
+        <Button type="submit" disabled={mutation.isPending}>
+          {mutation.isPending && <Loader className="animate-spin" />} Proceed to
+          Checkout
+        </Button>
       </form>
     </Form>
   );
