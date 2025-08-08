@@ -95,8 +95,8 @@ function PaymentForm({ plan, billingCycle, paymentMethods }: Props) {
         quantity: billingCycle === "monthly" ? 1 : 12,
         plan: subscriptionPlan.id,
         vendor: vendor.id,
-        success_url: `${origin}/vendor/onboarding/payments/status`,
-        cancel_url: `${origin}/vendor/onboarding/payments/status`,
+        success_url: `${origin}/vendor/onboarding/subscription/payment/status`,
+        cancel_url: `${origin}/vendor/onboarding/subscription/payment/status`,
       });
     }
   }, [subscriptionPlan, vendor]);

@@ -1,6 +1,6 @@
 "use server";
 
-import { publicAxios } from "@/lib/axios-instance";
+import authAxios, { publicAxios } from "@/lib/axios-instance";
 import { PaymentMethod } from "@/lib/types";
 
 export const getPaymentMethods = async (): Promise<PaymentMethod[]> => {
@@ -9,7 +9,7 @@ export const getPaymentMethods = async (): Promise<PaymentMethod[]> => {
 };
 
 export const checkSession = async (data: any) => {
-  const response = await publicAxios.post(
+  const response = await authAxios.post(
     "/api/v1/payments/check-session/",
     data
   );

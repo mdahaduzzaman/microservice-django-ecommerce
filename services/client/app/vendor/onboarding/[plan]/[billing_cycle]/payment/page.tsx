@@ -1,3 +1,4 @@
+import withAuth from "@/components/shared/with-auth";
 import { getPaymentMethods } from "@/features/payments/actions";
 import PaymentForm from "@/features/vendors/components/payment-form";
 import { PaymentMethod } from "@/lib/types";
@@ -5,9 +6,9 @@ import { PaymentMethod } from "@/lib/types";
 async function page({
   params,
 }: {
-  params: Promise<{ id: string; billing_cycle: string }>;
+  params: Promise<{ plan: string; billing_cycle: string }>;
 }) {
-  const { id, billing_cycle } = await params;
+  const { plan, billing_cycle } = await params;
 
   const paymentMethods: PaymentMethod[] = await getPaymentMethods();
 
@@ -15,7 +16,7 @@ async function page({
     <div className="w-2/3 mx-auto p-5 rounded-xl bg-secondary">
       <h1 className="text-3xl font-bold text-center mb-5">Make Payment</h1>
       <PaymentForm
-        plan={id}
+        plan={plan}
         billingCycle={billing_cycle}
         paymentMethods={paymentMethods}
       />
@@ -23,4 +24,4 @@ async function page({
   );
 }
 
-export default page;
+export default withAuth(page);
